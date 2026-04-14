@@ -1,5 +1,5 @@
 calcular_media :: (String, [Double]) -> Double
-calcular_media (nome, notas) = soma / 3
+calcular_media (nome, notas) = soma / fromIntegral (length (notas))
     where soma = foldl (+) 0 notas
 
 
