@@ -1,47 +1,39 @@
-data Nacao = Agua | Terra | Fogo | Ar deriving (Read, Show, Eq)
 
-data Ataque = Simples Nacao Int
-            | Combinado Nacao Nacao Int
-            | EstadoAvatar Int
-            deriving (Read, Show)
-            
+qSort :: [Int] -> [Int]
+qSort [] = []
+qSort (x:xs) = qSort [y| y <-xs, y<=x ] ++ [x] ++ qSort [y| y<-xs, y >=x ]
 
-vantagem :: Ataque -> Ataque -> Bool
-vantagem (Combinado Agua  Fogo  _) (Combinado Fogo  Agua  _) = True
-vantagem (Combinado Agua  Terra _) (Combinado Terra Agua  _) = True
-vantagem (Combinado Terra Ar    _) (Combinado Ar    Terra _) = True
-vantagem (Combinado Ar    Fogo  _) (Combinado Fogo  Ar    _) = True
+type Pessoa = String
+type Livro = String
+type BancoDados = [(Pessoa, Livro)]
 
-vantagem (Combinado Agua  Fogo  _) (Simples Fogo  _) = True
-vantagem (Combinado Agua  Terra _) (Simples Terra _) = True
-vantagem (Combinado Terra Ar    _) (Simples Ar    _) = True
-vantagem (Combinado Ar    Fogo  _) (Simples Fogo  _) = True
+baseExemplo :: BancoDados
+baseExemplo = [("Sergio", "LivrsoDoSergio"),("Andre", "LivroDoAndre"), ("Sergio", "SegundoLivroDoSergio")]
 
-vantagem (Simples Agua  _) (Simples Fogo  _) = True
-vantagem (Simples Terra _) (Simples Agua  _) = True
-vantagem (Simples Ar    _) (Simples Terra _) = True
-vantagem (Simples Fogo  _) (Simples Ar    _) = True
+livros:: BancoDados -> Pessoa -> [Livro]
+livros banco p  = [l | (n, l) <- banco , p == n]
 
-vantagem (Simples Agua  _) (Combinado Fogo  Fogo  _) = True
-vantagem (Simples Terra _) (Combinado Agua  Agua  _) = True
-vantagem (Simples Ar    _) (Combinado Terra Terra _) = True
-vantagem (Simples Fogo  _) (Combinado Ar    Ar    _) = True
-vantagem _ _ = False
+emprestimos:: BancoDados -> Livro -> [Pessoa]
+emprestimos banco livro  = [n | (n, l) <- banco ]
 
-tem_estadoAvatar :: Ataque -> bool -> bool
-tem_estadoAvatar EstadoAvatar _ t | (t==True) = False
-                                  | otherwise = True
+isCrescent :: (Int -> Int) -> Int -> Bool
+isCrescent f x | f (x+1) >= f x = True
+               | otherwise = False
 
+somaQuadradoDosItens :: [Int] -> Int
+somaQuadradoDosItens lista = foldr f 0 lista
+      where f elemento acumulador = (elemento^2) + acumulador
 
-danoTotal :: Nacao -> [Ataque] -> Int
-danoTotal n ataques = aux ataques (Simples n 0)
-    where aux [] _ = 0
-          aux (ataque:resto) anterior
-            | vantagem anterior ataque = aux resto ataque + 10
-            | otherwise                = aux resto ataque + 5
+filtrarElementos :: [Int] -> [Int]
+filtrarElementos lista = filter (\x -> (x>0)) lista
 
-main = do
-    a <- getLine
-    b <- getLine
-    let result = danoTotal (read a) (read b)
-    print result
+filtrar  l = [x| x<-l , (x>0)]
+
+mapearFunc :: [Int] -> [Int]
+mapearFunc l = map f l
+          where f x = x^2
+
+data Pessoa t = Pessoa t
+
+isPessoa :: Show t => Pessoa t -> Bool
+isPessoa (Pessoa _) = True
